@@ -1,11 +1,15 @@
 web:
     image: 'gitlab/gitlab-ee:latest'
     restart: always
-    hostname: 'gitlab.example.com'
+    hostname: 'localhost'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.example.com'
         # Add any other gitlab.rb configuration here, each on its own line
+
+        # GitLab proof of concept. Temporary fix to get past SSL errors.
+        # NOT SECURE!!!
+        letsencrypt['enable'] = false
     ports:
       - '80:80'
       - '443:443'
