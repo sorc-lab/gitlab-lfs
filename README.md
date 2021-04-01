@@ -74,7 +74,7 @@ Verify user/email config:
 You can also try this, but I am skeptical of the "--global" flag here:
 `$ git config --global --list`
 
-!!! WARNING !!!
+**!!! WARNING !!!**
 Disabling SSL verification is bad, so don't do this. This can be done temporarily to setup and
 learn GitLab server and LFS prior to setting up secure SSL connections:
 `$ git config http.sslVerify false`
@@ -140,3 +140,44 @@ $ sudo umount /dev/sdc
 Remove the drive.
 
 ## Restore GitLab Server from Backup
+The following must be true for a restore to work:
+- You have installed the exact same version and type (CE/EE) of GitLab Omnibus with which the
+  backup was created.
+- You have run sudo gitlab-ctl reconfigure at least once.
+- GitLab is running. If not, start it using sudo gitlab-ctl start (I've been using docker-compose)
+
+First ensure your backup tar file is in the backup directory described in the gitlab.rb
+configuration `gitlab_rails['backup_path']`.
+The default is /var/opt/gitlab/backups. It needs to be owned by the git user.
+
+**NOTE**: The commands below will be run from inside the container or via docker.
+
+**(OPTIONAL)**: If you used a USB drive connected to host machine, you'll need to copy them into
+the container:
+`$ sudo docker cp [OPTIONS] SRC_PATH CONTAINER:DEST_PATH`
+
+**NOTE**: The above 'cp' command is just a reverse of the command we used previously to copy files.
+
+Example commands for copying and setting permissions/ownership (your filename will be different):
+`$ sudo cp 11493107454_2018_04_25_10.6.4-ce_gitlab_backup.tar /var/opt/gitlab/backups/`
+`$ sudo chown git.git /var/opt/gitlab/backups/11493107454_2018_04_25_10.6.4-ce_gitlab_backup.tar`
+
+**NOTE**: The commands in the next step are all run from inside the container and do not need
+'sudo', since you'll be 'root' user.
+
+Stop the processes that are connected to the database. Leave the rest of GitLab running:
+`$ gitlab-ctl stop unicorn`
+`$ gitlab-ctl stop puma`
+`$ gitlab-ctl stop sidekiq`
+
+Verify the above processes are 'down':
+`$ gitlab-ctl status`
+
+**NOTE**: I did not see unicorn on the list, but puma and sidekiq were 'down'.
+
+**!!! WARNING !!!** This next command will overwrite data.
+Restore from backup by specifying the timestamp on the file (your filename will be different):
+`$ gitlab-backup restore BACKUP=11493107454_2018_04_25_10.6.4-ce`
+
+**TODO**: How to dc pull correct version for backup file, restore then upgrade to latest image?
+Document this, it will happen all the time.
