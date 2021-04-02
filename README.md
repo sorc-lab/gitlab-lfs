@@ -165,6 +165,9 @@ Example commands for copying and setting permissions/ownership (your filename wi
 **NOTE**: The commands in the next step are all run from inside the container and do not need
 'sudo', since you'll be 'root' user.
 
+**NOTE**: Make sure docker-compose file is pulling the correct image tag/version that matches the
+backup file's image/tag version.
+
 Stop the processes that are connected to the database. Leave the rest of GitLab running:
 `$ gitlab-ctl stop unicorn`
 `$ gitlab-ctl stop puma`
@@ -179,5 +182,65 @@ Verify the above processes are 'down':
 Restore from backup by specifying the timestamp on the file (your filename will be different):
 `$ gitlab-backup restore BACKUP=11493107454_2018_04_25_10.6.4-ce`
 
-**TODO**: How to dc pull correct version for backup file, restore then upgrade to latest image?
-Document this, it will happen all the time.
+Exit out of the container and `docker cp` the .rb config file and .json secrets file to
+`/etc/gitlab/`
+
+**NOTE**: The .rb config and .json secrets files need to be owned by 'root'.
+
+After restoring the config and secrets file, run the following inside the container:
+`$ gitlab-ctl reconfigure`
+`$ gitlab-ctl restart`
+`$ gitlab-rake gitlab:check SANITIZE=true`
+`$ gitlab-rake gitlab:doctor:secrets`
+
+---
+
+**TODO**: Seems like everything looks healthy and the restore is working, but I cannot access to UI
+w/ error saying "Connection refused". Also, gitlab-ctl status shows 'nginx' is down. Running
+`gitlab-ctl nginx start` does not fix this.
+This is because nginx cannot find /etc/gitlab/ssl/gitlab.example.com.crt cert file.
+**THIS NEEDS TO BE ADDED TO THE BACKUP PROCEDURE**. How to generate a new one?
+
+Couple things to note, the filenames need to be gitlab.crt and gitlab.key. Also play with making
+the gitlab container's ssh port 522, so that the host machine's port 22 doesn't conflict. Use this
+as an example for how to setup nginx config values:
+
+  version: '2'
+  services:
+    gitlab:
+      image: gitlab/gitlab-ce:latest
+      restart: unless-stopped
+      hostname: 'gitlab.<company>.com'
+      environment:
+        GITLAB_OMNIBUS_CONFIG: |
+          external_url 'https://gitlab.<company>.com'
+          gitlab_rails['gitlab_shell_ssh_port'] = 522
+          nginx['redirect_http_to_https'] = true
+          nginx['ssl_certificate'] = '/etc/gitlab/ssl/gitlab.crt'
+          nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/gitlab.key'
+      ports:
+        - '80:80'
+        - '443:443'
+        - '522:22'
+      volumes:
+        - './config/gitlab:/etc/gitlab'
+        - './logs:/var/log/gitlab'
+        - './data:/var/opt/gitlab'
+
+
+Will need to figure out how to generate .crt and key files in the short term until I can get this
+done the right way w/ a valid 3rd party cert provider and turn on letsencrypt SSL verification. May
+still be able to do self-signed.
+
+This link details how to create a self-signed cert: Using Ubuntu OpenSSL:
+https://futurestud.io/tutorials/how-to-run-gitlab-with-self-signed-ssl-certificate
+
+Also, take this time to reconfigure the host name to be https://gitlab.sorclab.com
+
+---
+
+## Next Steps
+**TODO: FIGURE OUT CLEAN UP OPERATIONS OF LFS DATA AND GENERAL MAINTENANCE PROCEDURES:
+https://docs.gitlab.com/ee/raketasks/cleanup.html**
+**TODO: CONSIDER CRON JOBS AND AUTOMATION FOR BKS AND MAINTENANCE SCRIPTS**
+**TODO: CONSIDER STORING THE SECRETS FILE SEPARATELY FROM THE BACKUPS**
