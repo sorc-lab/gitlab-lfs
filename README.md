@@ -132,10 +132,10 @@ If you don't know the container name, run 'docker ps' command to get all running
 `$ sudo docker ps`
 
 Unmount the mount point:
-$ sudo umount /media/R610BK
+`$ sudo umount /media/<mount_point_name>`
 
 Unmount the USB drive:
-$ sudo umount /dev/sdc
+`$ sudo umount /dev/sdc`
 
 Remove the drive.
 
