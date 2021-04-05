@@ -205,6 +205,8 @@ Couple things to note, the filenames need to be gitlab.crt and gitlab.key. Also 
 the gitlab container's ssh port 522, so that the host machine's port 22 doesn't conflict. Use this
 as an example for how to setup nginx config values:
 
+**TODO**: DON'T THINK ANY OF THIS IS NEEDED, BUT MAKE SURE.
+
   version: '2'
   services:
     gitlab:
@@ -236,6 +238,38 @@ This link details how to create a self-signed cert: Using Ubuntu OpenSSL:
 https://futurestud.io/tutorials/how-to-run-gitlab-with-self-signed-ssl-certificate
 
 Also, take this time to reconfigure the host name to be https://gitlab.sorclab.com
+
+Shell into container and mkdir /etc/gitlab/ssl
+
+**NOTE**: All SLL related files need to match "<hostname>.*", i.e. "gitlab.example.com.crt" etc.
+
+Create a 2048 bit private key
+If the ssl directory doesn't exist, please create it first
+`$ openssl genrsa -out "/etc/nginx/ssl/gitlab.example.com.key" 2048`
+
+This command generates the certificate signing request
+`$ sudo openssl req -new -key "/etc/nginx/ssl/gitlab.key" -out "/etc/nginx/ssl/gitlab.example.com.csr"`
+
+Country Name (2 letter code) [AU]:DE
+State or Province Name (full name) [Some-State]:Saxony-Anhalt  
+Locality Name (eg, city) []:Magdeburg  
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Future Studio  
+Organizational Unit Name (eg, section) []:  
+Common Name (e.g. server FQDN or YOUR name) []:gitlab.yourdomain.com  
+Email Address []:
+
+Please enter the following 'extra' attributes  
+to be sent with your certificate request  
+A challenge password []:  
+An optional company name []:  
+
+**NOTE**: The FQDN part is really important, but "gitlab.example.com" or whatever you set your
+domain name.
+
+Finally, generate the cert:
+`$ openssl x509 -req -days 365 -in "/etc/gitlab/ssl/gitlab.example.com.csr" -signkey "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.crt"`
+
+Run `$ gitlab-ctl restart` and nginx should now spin up without errors.
 
 ---
 
