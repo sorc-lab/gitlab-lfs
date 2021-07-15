@@ -25,9 +25,15 @@ def getBkFileName():
 
     # TODO: This fails because BK_DIR is pointed to host machine path, not container
     # find first backup file in dir that contains today's date
-    for file in os.listdir(BK_DIR):
-        if fnmatch.fnmatch(file, "*{}*".format(isoDateStr)):
-            return file;
+    # for file in os.listdir(BK_DIR):
+    #     if fnmatch.fnmatch(file, "*{}*".format(isoDateStr)):
+    #         return file;
+
+    # TODO: Try: `docker exec --privileged $NEW_CONTAINER_ID ls -1 /var/log`
+    lsDir = os.system("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR));
+    print("--- lsDir ----------------------------------------------------------");
+    print(lsDir);
+    print("--------------------------------------------------------------------");
 
 def copyBkToDropbox():
     bkFileName = getBkFileName();
@@ -40,11 +46,14 @@ def copyBkToDropbox():
     os.system("docker cp {}:{}/{} .".format(CONTAINER_NAME, BK_DIR, bkFileName));
 
     # TODO: Test that this copies to Dropbox home first, then modify.
-    os.system("scp -rp {}@{}:~/".format(DROPBOX_IP_ADDR));
+    os.system("scp -rp {}@{}:~/".format(DROPBOX_USR_NAME, DROPBOX_IP_ADDR));
 
 
 createBk();
-copyBkToDropbox();
+#copyBkToDropbox();
+
+# TODO: REMOVE AFTER TESTING. copyBkToDropbox will call this method internally.
+getBkFileName();
 
 # *** STACK TRACE FROM FIRST TEST RUN ***
 # Backup task is done.
