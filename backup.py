@@ -30,7 +30,8 @@ def getBkFileName():
     #         return file;
 
     # TODO: Try: `docker exec --privileged $NEW_CONTAINER_ID ls -1 /var/log`
-    lsDir = os.system("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR));
+    # return_value = os.popen('ls').read()
+    lsDir = os.popen("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR)).read();
     print("--- lsDir ----------------------------------------------------------");
     print(lsDir);
     print("--------------------------------------------------------------------");
@@ -49,7 +50,7 @@ def copyBkToDropbox():
     os.system("scp -rp {}@{}:~/".format(DROPBOX_USR_NAME, DROPBOX_IP_ADDR));
 
 
-createBk();
+#createBk();
 #copyBkToDropbox();
 
 # TODO: REMOVE AFTER TESTING. copyBkToDropbox will call this method internally.
