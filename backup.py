@@ -41,6 +41,7 @@ def getBkFileName():
         timestamp = splitFileName[0];
 
         if timestamp.isdigit():
+            print(timestamp);
             if timestamp > latestTimestamp:
                 latestTimestamp = timestamp; # should be 1626355288
 
