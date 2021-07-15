@@ -32,10 +32,13 @@ def getBkFileName():
     # TODO: Try: `docker exec --privileged $NEW_CONTAINER_ID ls -1 /var/log`
     # return_value = os.popen('ls').read()
     lsDir = os.popen("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR)).read();
-    print("--- lsDir ----------------------------------------------------------");
-    print(len(lsDir));
-    print(lsDir);
-    print("--------------------------------------------------------------------");
+    bkFiles = lsDir.splitlines();
+
+
+
+    print("--- bkFiles ----------------------------------------------------------");
+    print(bkFiles);
+    print("----------------------------------------------------------------------");
 
     # TODO: lsDir works, but not sure how it is stored. Line break separated array?
     #       Also, these is a timezone issue where depending on time of day, we could see
