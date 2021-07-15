@@ -33,8 +33,20 @@ def getBkFileName():
     # return_value = os.popen('ls').read()
     lsDir = os.popen("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR)).read();
     print("--- lsDir ----------------------------------------------------------");
+    print(len(lsDir));
     print(lsDir);
     print("--------------------------------------------------------------------");
+
+    # TODO: lsDir works, but not sure how it is stored. Line break separated array?
+    #       Also, these is a timezone issue where depending on time of day, we could see
+    #       multiple bks of the same day, but they were not actually the same day.
+    #       Script needs to actually look at filename and grab timestamp off the first
+    #       nibble of filename and get the most recent IF a duplicate is detected.
+    #       1. Get ls result and store in array
+    #       2. Make new array and populate it w/ filenames containing current time str
+    #       3. Loop array and get the timestamp that is the greatest value.
+    #       4. Return that filename.
+    #       IN THAT CASE, WHY NOT JUST GRAB THE MOST RECENT BK?!
 
 def copyBkToDropbox():
     bkFileName = getBkFileName();
