@@ -39,13 +39,12 @@ def getBkFileName():
     for bkFile in bkFiles:
         splitFileName = bkFile.split("_", 1);
         timestamp = splitFileName[0];
-        print(timestamp);
 
-        # if timestamp > latestTimestamp:
-        #     latestTimestamp = timestamp;
+        if timestamp.isdigit():
+            if timestamp > latestTimestamp:
+                latestTimestamp = timestamp; # should be 1626355288
 
-    # print("latestTimestamp:");
-    # print(latestTimestamp);
+    print(latestTimestamp);
 
 
     # TODO: lsDir works, but not sure how it is stored. Line break separated array?
