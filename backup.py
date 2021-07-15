@@ -37,6 +37,12 @@ def getBkFileName():
     latestTimestamp = 0;
 
     for bkFile in bkFiles:
+        # TODO: Type casting issue a nightmare. Why does "tmp" even show up in the list?
+        # TODO: Filter the list based on .tar first, then grab timestamp
+        #       1. Filter out any file w/o *.tar
+        #       2. Get the timestamp
+        #       3. Get largest timestamp
+        #       4. Return the filename.
         splitFileName = bkFile.split("_", 1);
         timestamp = 0;
 
@@ -48,17 +54,6 @@ def getBkFileName():
 
     print(latestTimestamp);
 
-
-    # TODO: lsDir works, but not sure how it is stored. Line break separated array?
-    #       Also, these is a timezone issue where depending on time of day, we could see
-    #       multiple bks of the same day, but they were not actually the same day.
-    #       Script needs to actually look at filename and grab timestamp off the first
-    #       nibble of filename and get the most recent IF a duplicate is detected.
-    #       1. Get ls result and store in array
-    #       2. Make new array and populate it w/ filenames containing current time str
-    #       3. Loop array and get the timestamp that is the greatest value.
-    #       4. Return that filename.
-    #       IN THAT CASE, WHY NOT JUST GRAB THE MOST RECENT BK?!
 
 def copyBkToDropbox():
     bkFileName = getBkFileName();
