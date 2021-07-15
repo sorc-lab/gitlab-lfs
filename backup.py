@@ -37,10 +37,14 @@ def getBkFileName():
     latestTimestamp = 0;
 
     for bkFile in bkFiles:
-        timestamp = bkFile.split("_", 1);
+        splitFileName = bkFile.split("_", 1);
+        timestamp = splitFileName[0];
+        print(timestamp);
+
         if timestamp > latestTimestamp:
             latestTimestamp = timestamp;
 
+    print("latestTimestamp:");
     print(latestTimestamp);
 
 
