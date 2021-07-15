@@ -34,11 +34,15 @@ def getBkFileName():
     lsDir = os.popen("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR)).read();
     bkFiles = lsDir.splitlines();
 
+    latestTimestamp = 0;
 
+    for bkFile in bkFiles:
+        timestamp = bkFile.split("_", 1);
+        if timestamp > latestTimestamp:
+            latestTimestamp = timestamp;
 
-    print("--- bkFiles ----------------------------------------------------------");
-    print(bkFiles);
-    print("----------------------------------------------------------------------");
+    print(latestTimestamp);
+
 
     # TODO: lsDir works, but not sure how it is stored. Line break separated array?
     #       Also, these is a timezone issue where depending on time of day, we could see
