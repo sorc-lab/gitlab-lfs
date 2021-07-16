@@ -4,21 +4,17 @@ import sys;
 
 from datetime import datetime;
 
-# NOTE: Script should only be run once per day. Logic is based on current date,
-#       so it will find multiple backup files if run twice in the same day and
-#       will only save off the first one it finds.
-
 DROPBOX_USR_NAME = sys.argv[1];
 DROPBOX_IP_ADDR = sys.argv[2];
 
 CONTAINER_NAME = "gitlab-lfs_web_1";
 BK_DIR = "/var/opt/gitlab/backups";
 
-def createBk():
+def createBkFile():
     # creates a backup file in /var/opt/gitlab/backups/<backupfile>.tar within container
     os.system("docker exec -t {} gitlab-backup create".format(CONTAINER_NAME));
 
-def getBkFileName():
+def findBkFileName():
     lsDir = os.popen("docker exec {} ls -1 {}".format(CONTAINER_NAME, BK_DIR)).read();
     bkFiles = lsDir.splitlines();
 
@@ -38,19 +34,23 @@ def getBkFileName():
     return fileName;
 
 
-def copyBkToDropbox():
-    fileName = getBkFileName();
-
+def uploadBkFile(fileName):
     if fileName is None:
         print("No backup file found for current iso date string.");
         return;
 
-    # extract the bk file from docker container first
+    # extract the bk file from docker container first, then upload to Dropbox
     os.system("docker cp {}:{}/{} .".format(CONTAINER_NAME, BK_DIR, fileName));
-
-    # TODO: Test that this copies to Dropbox home first, then modify.
     os.system("scp -rp {} {}@{}:~/".format(fileName, DROPBOX_USR_NAME, DROPBOX_IP_ADDR));
 
 
-#createBk();
-copyBkToDropbox();
+#createBkFile();
+
+bkFile = findBkFileName();
+uploadBkFile(bkFile);
+
+# TODO:
+#   [ ] Get the rest of the bk content, i.e. gitlab dir w/ certs and other stuff.
+#   [ ] Pull the GitLab source code for CashSim and copy that to Dropbox:
+#           Make config file to list repos to pull source code from. Right now
+#           just take a single repo in as an argument.
