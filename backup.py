@@ -44,14 +44,15 @@ def getBkFileName():
 
             splitFileName = bkFile.split("_", 1);
             timestamp = 0;
-        else: #TODO: Remove this else after testing.
-            print("File w/o .tar ext detected: " + bkFile);
 
             if isinstance(splitFileName[0], int):
                 timestamp = int(splitFileName[0]);
+                print(timestamp);
+            else:
+                print("Timestamp invalid. Not an int: " + splitFileName);
 
             if timestamp > latestTimestamp:
-                latestTimestamp = timestamp; # should be 1626355288 TODO: REMOVE NOTE.
+                latestTimestamp = timestamp;
                 fileName = bkFile;
 
     if fileName is None:
