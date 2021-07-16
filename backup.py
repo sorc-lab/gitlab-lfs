@@ -45,11 +45,12 @@ def getBkFileName():
             splitFileName = bkFile.split("_", 1);
             timestamp = 0;
 
+            # TODO: DO not use array element w/ index. Store it into a readable var.
             if isinstance(splitFileName[0], int):
                 timestamp = int(splitFileName[0]);
                 print(timestamp);
             else:
-                print("Timestamp invalid. Not an int: " + splitFileName);
+                print("Timestamp invalid. Not an int: " + splitFileName[0]);
 
             if timestamp > latestTimestamp:
                 latestTimestamp = timestamp;
