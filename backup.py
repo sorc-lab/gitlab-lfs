@@ -20,8 +20,8 @@ def createBk():
 
 def getBkFileName():
     # grabs everything before the 'T', e.g.: 2021-07-14T19:20:36.086270
-    splitDateStr = datetime.now().isoformat().split("T", 1);
-    isoDateStr = splitDateStr[0].replace("-", "_");
+    # splitDateStr = datetime.now().isoformat().split("T", 1);
+    # isoDateStr = splitDateStr[0].replace("-", "_");
 
     # TODO: This fails because BK_DIR is pointed to host machine path, not container
     # find first backup file in dir that contains today's date
@@ -37,22 +37,27 @@ def getBkFileName():
     latestTimestamp = 0;
 
     for bkFile in bkFiles:
-        # TODO: Type casting issue a nightmare. Why does "tmp" even show up in the list?
-        # TODO: Filter the list based on .tar first, then grab timestamp
-        #       1. Filter out any file w/o *.tar
-        #       2. Get the timestamp
-        #       3. Get largest timestamp
-        #       4. Return the filename.
-        splitFileName = bkFile.split("_", 1);
-        timestamp = 0;
+        fileName = None;
 
-        if isinstance(splitFileName[0], int):
-            timestamp = int(splitFileName[0]);
-    
-        if timestamp > latestTimestamp:
-            latestTimestamp = timestamp; # should be 1626355288
+        if bkFile.endswith(".tar"):
+            print("Found a file w/ '.tar' ext.: " + bkFile);
 
-    print(latestTimestamp);
+            splitFileName = bkFile.split("_", 1);
+            timestamp = 0;
+        else: #TODO: Remove this else after testing.
+            print("No filename found w/ .tar file ext.")''
+
+            if isinstance(splitFileName[0], int):
+                timestamp = int(splitFileName[0]);
+
+            if timestamp > latestTimestamp:
+                latestTimestamp = timestamp; # should be 1626355288 TODO: REMOVE NOTE.
+                fileName = bkFile;
+
+    if fileName is None:
+        print("No backup files found!");
+
+    print(fileName);
 
 
 def copyBkToDropbox():
