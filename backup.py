@@ -45,7 +45,7 @@ def getBkFileName():
             splitFileName = bkFile.split("_", 1);
             timestamp = 0;
         else: #TODO: Remove this else after testing.
-            print("No filename found w/ .tar file ext.")''
+            print("No filename found w/ .tar file ext.");
 
             if isinstance(splitFileName[0], int):
                 timestamp = int(splitFileName[0]);
