@@ -43,8 +43,7 @@ def getBkFileName():
 
             # get Unix timestamp portion of file name
             splitFileName = bkFile.split("_", 1);
-            #timestamp = int(splitFileName[0], 16); # cast to long
-            timestamp = splitFileName[0];
+            timestamp = int(splitFileName[0]); # cast to long
             print(timestamp); # TODO: Remove after testing
 
             if timestamp > latestTimestamp:
