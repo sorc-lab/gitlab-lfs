@@ -35,22 +35,16 @@ def getBkFileName():
     bkFiles = lsDir.splitlines();
 
     latestTimestamp = 0;
+    fileName = None;
 
     for bkFile in bkFiles:
-        fileName = None;
-
         if bkFile.endswith(".tar"):
             print("Found a file w/ '.tar' ext.: " + bkFile);
 
+            # get Unix timestamp portion of file name
             splitFileName = bkFile.split("_", 1);
-            timestamp = 0;
-
-            # TODO: DO not use array element w/ index. Store it into a readable var.
-            if isinstance(splitFileName[0], int):
-                timestamp = int(splitFileName[0]);
-                print(timestamp);
-            else:
-                print("Timestamp invalid. Not an int: " + splitFileName[0]);
+            timestamp = int(splitFileName[0], 16); # cast to long
+            print(timestamp); # TODO: Remove after testing
 
             if timestamp > latestTimestamp:
                 latestTimestamp = timestamp;
