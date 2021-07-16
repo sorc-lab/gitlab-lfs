@@ -54,3 +54,8 @@ uploadBkFile(bkFile);
 #   [ ] Pull the GitLab source code for CashSim and copy that to Dropbox:
 #           Make config file to list repos to pull source code from. Right now
 #           just take a single repo in as an argument.
+#   [ ] Fix uploadBkFile so that it doesn't waste a step writing to Host OS
+#           before cp'ing to Dropbox. Manually cleanup old files after.
+#   [ ] Add console logging to show user what the script is processing.
+#   [ ] Add an extra step to also copy .tar bk and gitlab dirs to USB external\
+#           drive as an optional step if configuration flag is set.
